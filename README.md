@@ -1,18 +1,64 @@
-# React + Vite
+# SipWise
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+SipWise is a small React application built with Vite. The app uses React Router v7 to render a main layout and a home page.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- React 19 application with Vite
+- Client-side routing using `react-router-dom`
+- Simple page structure with `Main` and `Home` routes
+- ESLint configured for React development
 
-## React Compiler
+## Project structure
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+- `src/App.jsx` - App entry point and router configuration
+- `src/page/Main.jsx` - Main layout component with an `Outlet` for nested routes
+- `src/page/Home.jsx` - Home page component
+- `src/main.jsx` - React app bootstrap file
+- `public/` - Static assets
 
-Note: This will impact Vite dev & build performances.
+## Getting started
 
-## Expanding the ESLint configuration
+### Install dependencies
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```bash
+pnpm install
+```
+
+### Run development server
+
+```bash
+pnpm dev
+```
+
+Open the URL shown in the terminal to view the app in the browser.
+
+### Build for production
+
+```bash
+pnpm build
+```
+
+### Preview production build
+
+```bash
+pnpm preview
+```
+
+### Run linting
+
+```bash
+pnpm lint
+```
+
+## Dependencies
+
+- `react`
+- `react-dom`
+- `react-router-dom`
+- `vite`
+- `eslint`
+
+## Notes
+
+This project is currently a simple starter app named SipWise with a branded home screen and placeholder layout. You can extend it by adding pages, routes, and app-specific functionality.
