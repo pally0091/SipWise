@@ -1,5 +1,4 @@
-import { ENDPOINTS } from "./api.js";
-import { transformCocktailData } from "./data.js";
+import { ENDPOINTS, transformCocktailData } from "./data.js";
 
 // 1. Fetch a single cocktail by ID
 export async function getCocktailById(id) {

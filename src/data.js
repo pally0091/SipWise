@@ -32,6 +32,7 @@ export function transformCocktailData(drink) {
   return {
     id: drink.idDrink,
     name: drink.strDrink,
+    tag: drink.strTags ? drink.strTags.split(",").map((tag) => tag.trim()) : [],
     thumbnail: drink.strDrinkThumb,
     category: drink.strCategory,
     alcoholic: drink.strAlcoholic,
