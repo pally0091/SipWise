@@ -7,6 +7,7 @@ export const ENDPOINTS = {
   getRandom: `${API_BASE_URL}/random.php`,
   filterByIngredient: (ingredient) =>
     `${API_BASE_URL}/filter.php?i=${encodeURIComponent(ingredient)}`,
+  ingredientsList: `${API_BASE_URL}/list.php?i=list`,
 };
 
 // Transform the messy API structure into a clean JS object

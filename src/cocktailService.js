@@ -42,3 +42,34 @@ export async function searchCocktails(query) {
     return [];
   }
 }
+
+// 4. Filter cocktails by ingredient
+export async function filterCocktailsByIngredient(ingredient) {
+  try {
+    const response = await fetch(ENDPOINTS.filterByIngredient(ingredient));
+    if (!response.ok) throw new Error("Network response was not ok");
+
+    const data = await response.json();
+    return data.drinks ? data.drinks.map(transformCocktailData) : [];
+  } catch (error) {
+    console.error("Error filtering cocktails by ingredient:", error);
+    return [];
+  }
+}
+
+// 5. Get list of available ingredients
+export async function getIngredientList() {
+  try {
+    const response = await fetch(ENDPOINTS.ingredientsList);
+    if (!response.ok) throw new Error("Network response was not ok");
+
+    const data = await response.json();
+    // API returns objects like { strIngredient1: "Vodka" }
+    return data.drinks
+      ? data.drinks.map((d) => d.strIngredient1).filter(Boolean)
+      : [];
+  } catch (error) {
+    console.error("Error fetching ingredient list:", error);
+    return [];
+  }
+}

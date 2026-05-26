@@ -1,5 +1,11 @@
 import { useEffect, useState } from "react";
-import { getRandomCocktail, searchCocktails } from "../cocktailService.js";
+import {
+  filterCocktailsByIngredient,
+  getCocktailById,
+  getIngredientList,
+  getRandomCocktail,
+  searchCocktails,
+} from "../cocktailService.js";
 
 const DrinkCard = ({ drink }) => {
   if (!drink) return null;
@@ -19,16 +25,19 @@ const DrinkCard = ({ drink }) => {
           {drink.category} · {drink.alcoholic}
         </p>
         <p className="mt-3 max-h-16 overflow-hidden text-sm text-slate-600">
-          {drink.instructions}
+          {drink.ingredients.map((ing, index) => (
+            <div key={index}>{ing.name}</div>
+          ))}
         </p>
-        <div className="mt-4 flex flex-wrap gap-2 text-xs text-slate-700">
+        <div className="mt-4 flex flex-row gap-2 text-xs text-slate-700">
           <span className="rounded-full bg-slate-100 px-3 py-1">
             {drink.glass}
           </span>
+
           {drink.tag?.slice(0, 3).map((tag) => (
             <span
               key={tag}
-              className="rounded-full bg-amber-100 px-3 py-1"
+              className="rounded-full bg-amber-200 px-3 py-1"
             >
               {tag}
             </span>
@@ -39,26 +48,62 @@ const DrinkCard = ({ drink }) => {
   );
 };
 
+const SimpleDrinkCard = ({ drink }) => {
+  const [full, setFull] = useState(null);
+  const [loadingFull, setLoadingFull] = useState(false);
+
+  const loadFull = async () => {
+    if (full) return;
+    setLoadingFull(true);
+    const data = await getCocktailById(drink.id);
+    setFull(data);
+    setLoadingFull(false);
+  };
+
+  if (full) return <DrinkCard drink={full} />;
+
+  return (
+    <article className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm text-center">
+      <img src={drink.thumbnail} alt={drink.name} className="mx-auto mb-4 h-36 w-36 object-cover rounded-lg" />
+      <h3 className="text-lg font-semibold text-slate-900">{drink.name}</h3>
+      <div className="mt-3 flex items-center justify-center gap-3">
+        <button
+          onClick={loadFull}
+          className="rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700"
+        >
+          {loadingFull ? "Loading..." : "View details"}
+        </button>
+      </div>
+    </article>
+  );
+};
+
 const Home = () => {
+  const [ingredientOptions, setIngredientOptions] = useState([]);
   const [bannerDrink, setBannerDrink] = useState(null);
   const [showcaseDrinks, setShowcaseDrinks] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [ingredientQuery, setIngredientQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [statusMessage, setStatusMessage] = useState(
-    "Type a cocktail name and press search.",
+    "Search by name or ingredient to explore cocktails.",
   );
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function loadHome() {
       setLoading(true);
-      const [randomBanner, featuredList] = await Promise.all([
+      const [randomBanner, featuredList, ingredientsList] = await Promise.all([
         getRandomCocktail(),
-        searchCocktails("a"),
+        searchCocktails("d"),
+        getIngredientList(),
       ]);
 
       setBannerDrink(randomBanner);
       setShowcaseDrinks(featuredList.slice(0, 3));
+      setIngredientOptions(
+        ingredientsList.map((ing) => ({ label: ing, value: ing })),
+      );
       setLoading(false);
     }
 
@@ -85,6 +130,53 @@ const Home = () => {
     const results = await searchCocktails(searchQuery.trim());
     setSearchResults(results);
     setStatusMessage(results.length ? "Search results" : "No cocktails found.");
+    setLoading(false);
+  };
+
+  const handleIngredientSearch = async (event) => {
+    event.preventDefault();
+
+    if (!ingredientQuery.trim()) {
+      setSearchResults([]);
+      setStatusMessage("Please select an ingredient to filter by.");
+      return;
+    }
+
+    setLoading(true);
+    const results = await filterCocktailsByIngredient(ingredientQuery.trim());
+    setSearchResults(results);
+    setStatusMessage(
+      results.length
+        ? `Drinks with ${ingredientQuery.trim()}`
+        : `No cocktails found with ${ingredientQuery.trim()}`,
+    );
+    setLoading(false);
+  };
+
+  const handleIngredientChange = async (event) => {
+    const selectedIngredient = event.target.value;
+    setIngredientQuery(selectedIngredient);
+
+    if (!selectedIngredient) {
+      setSearchResults([]);
+      setStatusMessage("Select an ingredient to filter cocktails.");
+      return;
+    }
+
+    // find the label for nicer messages
+    const option = ingredientOptions.find(
+      (o) => o.value === selectedIngredient,
+    );
+    const label = option ? option.label : selectedIngredient;
+
+    setLoading(true);
+    const results = await filterCocktailsByIngredient(selectedIngredient);
+    setSearchResults(results);
+    setStatusMessage(
+      results.length
+        ? `Drinks with ${label}`
+        : `No cocktails found with ${label}`,
+    );
     setLoading(false);
   };
 
@@ -133,7 +225,9 @@ const Home = () => {
                   {bannerDrink.name}
                 </h2>
                 <p className="mt-3 text-sm leading-6 text-slate-300">
-                  {bannerDrink.instructions}
+                  {bannerDrink.ingredients
+                    .map((ing) => `${ing.name}`)
+                    .join(", ")}
                 </p>
                 <div className="mt-4 flex flex-wrap gap-2">
                   <span className="rounded-full bg-slate-800 px-3 py-1 text-xs">
@@ -161,7 +255,7 @@ const Home = () => {
       </section>
 
       <section className="grid gap-8">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div className="flex flex-col gap-3 sm:items-end sm:justify-between">
           <div>
             <p className="text-sm uppercase tracking-[0.32em] text-amber-500">
               Explore
@@ -170,30 +264,66 @@ const Home = () => {
               Featured Drinks
             </h2>
           </div>
-          <form
-            onSubmit={handleSearch}
-            className="flex flex-col gap-3 sm:flex-row sm:items-center"
-          >
-            <label
-              htmlFor="cocktail-search"
-              className="sr-only"
+          <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+            <form
+              onSubmit={handleSearch}
+              className="flex flex-col gap-3 sm:flex-row sm:items-center"
             >
-              Search cocktails
-            </label>
-            <input
-              id="cocktail-search"
-              value={searchQuery}
-              onChange={(event) => setSearchQuery(event.target.value)}
-              placeholder="Search cocktails by name"
-              className="min-w-60 rounded-full border border-slate-300 bg-white px-5 py-3 text-slate-900 outline-none transition focus:border-amber-400 focus:ring-4 focus:ring-amber-200"
-            />
-            <button
-              type="submit"
-              className="inline-flex items-center justify-center rounded-full bg-slate-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-700"
+              <label
+                htmlFor="cocktail-search"
+                className="sr-only"
+              >
+                Search cocktails by name
+              </label>
+              <input
+                id="cocktail-search"
+                value={searchQuery}
+                onChange={(event) => setSearchQuery(event.target.value)}
+                placeholder="Search cocktails by name"
+                className="min-w-60 rounded-full border border-slate-300 bg-white px-5 py-3 text-slate-900 outline-none transition focus:border-amber-400 focus:ring-4 focus:ring-amber-200"
+              />
+              <button
+                type="submit"
+                className="inline-flex items-center justify-center rounded-full bg-slate-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-700"
+              >
+                Search
+              </button>
+            </form>
+
+            <form
+              onSubmit={handleIngredientSearch}
+              className="flex flex-col gap-3 sm:flex-row sm:items-center"
             >
-              Search
-            </button>
-          </form>
+              <label
+                htmlFor="ingredient-search"
+                className="sr-only"
+              >
+                Filter cocktails by ingredient
+              </label>
+              <select
+                id="ingredient-search"
+                value={ingredientQuery}
+                onChange={handleIngredientChange}
+                className="min-w-60 rounded-full border border-slate-300 bg-white px-5 py-3 text-slate-900 outline-none transition focus:border-amber-400 focus:ring-4 focus:ring-amber-200"
+              >
+                <option value="">Select ingredient</option>
+                {ingredientOptions.map((it) => (
+                  <option
+                    key={it.value}
+                    value={it.value}
+                  >
+                    {it.label}
+                  </option>
+                ))}
+              </select>
+              <button
+                type="submit"
+                className="inline-flex items-center justify-center rounded-full bg-amber-400 px-6 py-3 text-sm font-semibold text-slate-900 transition hover:bg-amber-300"
+              >
+                Filter
+              </button>
+            </form>
+          </div>
         </div>
 
         {loading ? (
@@ -218,10 +348,11 @@ const Home = () => {
               {searchResults.length > 0 ? (
                 <div className="mt-6 grid gap-6 md:grid-cols-3">
                   {searchResults.map((drink) => (
-                    <DrinkCard
-                      key={drink.id}
-                      drink={drink}
-                    />
+                    drink.instructions ? (
+                      <DrinkCard key={drink.id} drink={drink} />
+                    ) : (
+                      <SimpleDrinkCard key={drink.id} drink={drink} />
+                    )
                   ))}
                 </div>
               ) : (
