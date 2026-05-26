@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import {
   filterCocktailsByIngredient,
   getCocktailById,
@@ -13,14 +14,23 @@ const DrinkCard = ({ drink }) => {
   return (
     <article className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm shadow-slate-200/50 transition hover:-translate-y-1 hover:shadow-lg">
       <div className="overflow-hidden rounded-2xl">
-        <img
-          src={drink.thumbnail}
-          alt={drink.name}
-          className="h-44 w-full object-cover"
-        />
+        <Link to={`/drink/${drink.id}`}>
+          <img
+            src={drink.thumbnail}
+            alt={drink.name}
+            className="h-44 w-full object-cover"
+          />
+        </Link>
       </div>
       <div className="mt-4">
-        <h3 className="text-xl font-semibold text-slate-900">{drink.name}</h3>
+        <h3 className="text-xl font-semibold text-slate-900">
+          <Link
+            to={`/drink/${drink.id}`}
+            className="hover:underline"
+          >
+            {drink.name}
+          </Link>
+        </h3>
         <p className="text-sm text-slate-500">
           {drink.category} · {drink.alcoholic}
         </p>
@@ -64,7 +74,13 @@ const SimpleDrinkCard = ({ drink }) => {
 
   return (
     <article className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm text-center">
-      <img src={drink.thumbnail} alt={drink.name} className="mx-auto mb-4 h-36 w-36 object-cover rounded-lg" />
+      <Link to={`/drink/${drink.id}`}>
+        <img
+          src={drink.thumbnail}
+          alt={drink.name}
+          className="mx-auto mb-4 h-36 w-36 object-cover rounded-lg"
+        />
+      </Link>
       <h3 className="text-lg font-semibold text-slate-900">{drink.name}</h3>
       <div className="mt-3 flex items-center justify-center gap-3">
         <button
@@ -347,13 +363,19 @@ const Home = () => {
               </h3>
               {searchResults.length > 0 ? (
                 <div className="mt-6 grid gap-6 md:grid-cols-3">
-                  {searchResults.map((drink) => (
+                  {searchResults.map((drink) =>
                     drink.instructions ? (
-                      <DrinkCard key={drink.id} drink={drink} />
+                      <DrinkCard
+                        key={drink.id}
+                        drink={drink}
+                      />
                     ) : (
-                      <SimpleDrinkCard key={drink.id} drink={drink} />
-                    )
-                  ))}
+                      <SimpleDrinkCard
+                        key={drink.id}
+                        drink={drink}
+                      />
+                    ),
+                  )}
                 </div>
               ) : (
                 <p className="mt-4 text-slate-600">
