@@ -73,7 +73,7 @@ const DrinkDetail = () => {
           <img
             src={drink.thumbnail}
             alt={drink.name}
-            className="rounded-[2.25rem] w-full object-cover shadow-inner aspect-[4/5] lg:aspect-auto h-full"
+            className="rounded-[2.25rem] w-full object-cover shadow-inner aspect-4/5 lg:aspect-auto h-full"
           />
           <div className="absolute inset-0 bg-linear-to-t from-slate-950/80 via-transparent to-transparent rounded-[2.5rem]" />
           <div className="absolute bottom-8 left-8 right-8">
@@ -123,7 +123,7 @@ const DrinkDetail = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="rounded-3xl border border-white/5 bg-slate-900/40 p-8 backdrop-blur-md shadow-lg flex-grow"
+            className="rounded-3xl border border-white/5 bg-slate-900/40 p-8 backdrop-blur-md shadow-lg grow"
           >
             <div className="flex items-center gap-3 mb-6">
               <ListChecks size={24} className="text-amber-500" />
