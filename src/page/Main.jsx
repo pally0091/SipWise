@@ -14,6 +14,7 @@ const Main = () => {
           Made by{" "}
           <a
             href="https://github.com/pally0091"
+            target="_blank"
             className="text-blue-400 hover:text-blue-300"
           >
             F R Esa
