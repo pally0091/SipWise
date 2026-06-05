@@ -14,25 +14,29 @@ const containerVariants = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
-    transition: { staggerChildren: 0.1 }
-  }
+    transition: { staggerChildren: 0.1 },
+  },
 };
 
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { type: "spring", stiffness: 300, damping: 24 },
+  },
 };
 
 const DrinkCard = ({ drink }) => {
   if (!drink) return null;
 
   return (
-    <motion.article 
+    <motion.article
       variants={itemVariants}
       whileHover={{ y: -8 }}
       className="group relative flex flex-col rounded-3xl border border-white/10 bg-slate-900/60 p-4 shadow-xl backdrop-blur-md transition-all hover:shadow-rose-500/20 hover:border-white/20"
     >
-      <div className="overflow-hidden rounded-2xl aspect-[4/3] bg-slate-800">
+      <div className="overflow-hidden rounded-2xl aspect-4/3 bg-slate-800">
         <Link to={`/drink/${drink.id}`}>
           <motion.img
             whileHover={{ scale: 1.08 }}
@@ -44,14 +48,13 @@ const DrinkCard = ({ drink }) => {
           />
         </Link>
       </div>
-      <div className="mt-5 flex flex-col flex-grow">
+      <div className="mt-5 flex flex-col grow">
         <h3 className="text-xl font-bold text-slate-100 group-hover:text-amber-400 transition-colors">
-          <Link to={`/drink/${drink.id}`}>
-            {drink.name}
-          </Link>
+          <Link to={`/drink/${drink.id}`}>{drink.name}</Link>
         </h3>
         <p className="text-sm font-medium text-slate-400 mt-1">
-          {drink.category} <span className="text-slate-600">•</span> {drink.alcoholic}
+          {drink.category} <span className="text-slate-600">•</span>{" "}
+          {drink.alcoholic}
         </p>
         <p className="mt-3 text-sm text-slate-300 line-clamp-2 leading-relaxed">
           {drink.ingredients.map((ing) => ing.name).join(", ")}
@@ -89,7 +92,7 @@ const SimpleDrinkCard = ({ drink }) => {
   if (full) return <DrinkCard drink={full} />;
 
   return (
-    <motion.article 
+    <motion.article
       variants={itemVariants}
       whileHover={{ y: -5 }}
       className="flex flex-col items-center justify-between rounded-3xl border border-white/10 bg-slate-900/60 p-5 shadow-xl backdrop-blur-md text-center hover:border-white/20 transition-all"
@@ -110,7 +113,12 @@ const SimpleDrinkCard = ({ drink }) => {
           onClick={loadFull}
           className="w-full flex items-center justify-center gap-2 rounded-full bg-linear-to-r from-amber-500 to-rose-500 px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-rose-500/25 transition-transform hover:scale-105 active:scale-95"
         >
-          {loadingFull ? <Loader className="animate-spin" size={18} /> : (
+          {loadingFull ? (
+            <Loader
+              className="animate-spin"
+              size={18}
+            />
+          ) : (
             <>
               View details <ArrowRight size={16} />
             </>
@@ -129,7 +137,7 @@ const Home = () => {
   const [ingredientQuery, setIngredientQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [statusMessage, setStatusMessage] = useState(
-    "Search by name or ingredient to explore cocktails."
+    "Search by name or ingredient to explore cocktails.",
   );
   const [loading, setLoading] = useState(true);
 
@@ -145,7 +153,7 @@ const Home = () => {
       setBannerDrink(randomBanner);
       setShowcaseDrinks(featuredList.slice(0, 3));
       setIngredientOptions(
-        ingredientsList.map((ing) => ({ label: ing, value: ing }))
+        ingredientsList.map((ing) => ({ label: ing, value: ing })),
       );
       setLoading(false);
     }
@@ -191,7 +199,7 @@ const Home = () => {
     setStatusMessage(
       results.length
         ? `Drinks with ${ingredientQuery.trim()}`
-        : `No cocktails found with ${ingredientQuery.trim()}`
+        : `No cocktails found with ${ingredientQuery.trim()}`,
     );
     setLoading(false);
   };
@@ -206,7 +214,9 @@ const Home = () => {
       return;
     }
 
-    const option = ingredientOptions.find((o) => o.value === selectedIngredient);
+    const option = ingredientOptions.find(
+      (o) => o.value === selectedIngredient,
+    );
     const label = option ? option.label : selectedIngredient;
 
     setLoading(true);
@@ -215,13 +225,13 @@ const Home = () => {
     setStatusMessage(
       results.length
         ? `Drinks with ${label}`
-        : `No cocktails found with ${label}`
+        : `No cocktails found with ${label}`,
     );
     setLoading(false);
   };
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       className="space-y-16 px-4 py-8 sm:px-6 lg:px-8 max-w-7xl mx-auto"
@@ -229,39 +239,41 @@ const Home = () => {
       {/* Hero Section */}
       <section className="relative overflow-hidden rounded-[2.5rem] bg-slate-900 border border-white/10 shadow-2xl shadow-rose-900/20">
         <div className="absolute inset-0 bg-linear-to-br from-amber-500/10 via-rose-500/10 to-fuchsia-500/10" />
-        
+
         <div className="relative grid gap-8 lg:grid-cols-[1.3fr_1fr] items-center">
           <div className="flex flex-col justify-center gap-8 p-8 sm:p-14 z-10">
             <div>
-              <motion.span 
+              <motion.span
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="inline-flex rounded-full bg-linear-to-r from-amber-400 to-amber-500 px-5 py-2 text-xs font-bold uppercase tracking-widest text-slate-900 shadow-lg shadow-amber-500/30"
               >
                 Featured Cocktail
               </motion.span>
-              <motion.h1 
+              <motion.h1
                 initial={{ opacity: 0, x: -30 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.1 }}
                 className="mt-6 text-4xl font-extrabold sm:text-6xl text-white leading-tight"
               >
-                SipWise picks a <br/>
+                SipWise picks a <br />
                 <span className="bg-linear-to-r from-amber-400 via-rose-400 to-fuchsia-500 bg-clip-text text-transparent">
                   fresh drink
-                </span> for you.
+                </span>{" "}
+                for you.
               </motion.h1>
-              <motion.p 
+              <motion.p
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.2 }}
                 className="mt-6 max-w-xl text-lg text-slate-300 leading-relaxed"
               >
-                Discover a random cocktail every time, browse our curated showcase, or search for your next favorite drink.
+                Discover a random cocktail every time, browse our curated
+                showcase, or search for your next favorite drink.
               </motion.p>
             </div>
 
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
@@ -289,7 +301,7 @@ const Home = () => {
 
             <AnimatePresence mode="wait">
               {bannerDrink && (
-                <motion.div 
+                <motion.div
                   key={bannerDrink.id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -319,12 +331,12 @@ const Home = () => {
           </div>
 
           {bannerDrink && (
-            <motion.div 
+            <motion.div
               key={`img-${bannerDrink.id}`}
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5 }}
-              className="relative h-full min-h-[400px] lg:min-h-full rounded-[2.5rem] overflow-hidden lg:rounded-l-none"
+              className="relative h-full min-h-100 lg:min-h-full rounded-[2.5rem] overflow-hidden lg:rounded-l-none"
             >
               <img
                 src={bannerDrink.thumbnail}
@@ -349,10 +361,18 @@ const Home = () => {
               Find your mix.
             </h2>
           </div>
-          
-          <div className="grid gap-4 sm:grid-cols-2 lg:w-[600px]">
-            <form onSubmit={handleSearch} className="relative group">
-              <label htmlFor="cocktail-search" className="sr-only">Search cocktails by name</label>
+
+          <div className="grid gap-4 sm:grid-cols-2 lg:w-150">
+            <form
+              onSubmit={handleSearch}
+              className="relative group"
+            >
+              <label
+                htmlFor="cocktail-search"
+                className="sr-only"
+              >
+                Search cocktails by name
+              </label>
               <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-rose-400 transition-colors">
                 <Search size={18} />
               </div>
@@ -371,8 +391,16 @@ const Home = () => {
               </button>
             </form>
 
-            <form onSubmit={handleIngredientSearch} className="relative group">
-              <label htmlFor="ingredient-search" className="sr-only">Filter cocktails by ingredient</label>
+            <form
+              onSubmit={handleIngredientSearch}
+              className="relative group"
+            >
+              <label
+                htmlFor="ingredient-search"
+                className="sr-only"
+              >
+                Filter cocktails by ingredient
+              </label>
               <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-amber-400 transition-colors">
                 <Filter size={18} />
               </div>
@@ -384,7 +412,12 @@ const Home = () => {
               >
                 <option value="">Select ingredient</option>
                 {ingredientOptions.map((it) => (
-                  <option key={it.value} value={it.value}>{it.label}</option>
+                  <option
+                    key={it.value}
+                    value={it.value}
+                  >
+                    {it.label}
+                  </option>
                 ))}
               </select>
               <button
@@ -398,30 +431,36 @@ const Home = () => {
         </div>
 
         {loading ? (
-          <div className="flex flex-col items-center justify-center rounded-[2rem] border border-white/5 bg-slate-900/30 p-20 backdrop-blur-sm">
-            <Loader className="animate-spin text-rose-500 mb-4" size={40} />
+          <div className="flex flex-col items-center justify-center rounded-4xl border border-white/5 bg-slate-900/30 p-20 backdrop-blur-sm">
+            <Loader
+              className="animate-spin text-rose-500 mb-4"
+              size={40}
+            />
             <p className="text-slate-400 font-medium">Mixing drinks...</p>
           </div>
         ) : (
           <>
             {!searchQuery && !ingredientQuery && (
-              <motion.div 
+              <motion.div
                 variants={containerVariants}
                 initial="hidden"
                 animate="show"
                 className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
               >
                 {showcaseDrinks.map((drink) => (
-                  <DrinkCard key={drink.id} drink={drink} />
+                  <DrinkCard
+                    key={drink.id}
+                    drink={drink}
+                  />
                 ))}
               </motion.div>
             )}
 
             {(searchQuery || ingredientQuery || searchResults.length > 0) && (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="rounded-[2rem] border border-white/10 bg-slate-900/40 p-8 backdrop-blur-md shadow-2xl"
+                className="rounded-4xl border border-white/10 bg-slate-900/40 p-8 backdrop-blur-md shadow-2xl"
               >
                 <div className="flex items-center gap-3 mb-8 pb-4 border-b border-white/10">
                   <div className="h-8 w-2 rounded-full bg-linear-to-b from-amber-400 to-rose-500" />
@@ -429,9 +468,9 @@ const Home = () => {
                     {statusMessage}
                   </h3>
                 </div>
-                
+
                 {searchResults.length > 0 ? (
-                  <motion.div 
+                  <motion.div
                     variants={containerVariants}
                     initial="hidden"
                     animate="show"
@@ -439,15 +478,24 @@ const Home = () => {
                   >
                     {searchResults.map((drink) =>
                       drink.instructions ? (
-                        <DrinkCard key={drink.id} drink={drink} />
+                        <DrinkCard
+                          key={drink.id}
+                          drink={drink}
+                        />
                       ) : (
-                        <SimpleDrinkCard key={drink.id} drink={drink} />
-                      )
+                        <SimpleDrinkCard
+                          key={drink.id}
+                          drink={drink}
+                        />
+                      ),
                     )}
                   </motion.div>
                 ) : (
                   <div className="py-12 text-center text-slate-400">
-                    <Dices className="mx-auto mb-4 opacity-50" size={48} />
+                    <Dices
+                      className="mx-auto mb-4 opacity-50"
+                      size={48}
+                    />
                     <p className="text-lg">
                       {searchQuery.trim()
                         ? "We couldn't find any drinks matching that name."
